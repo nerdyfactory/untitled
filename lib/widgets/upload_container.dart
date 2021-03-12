@@ -9,8 +9,6 @@ class _UploadContainerState extends State<UploadContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // padding: EdgeInsets.all(0.0),
-      // margin: EdgeInsets.all(0.0),
       height: MediaQuery.of(context).size.width * 1,
       width: MediaQuery.of(context).size.width * 1,
       child: Card(
@@ -24,9 +22,8 @@ class _UploadContainerState extends State<UploadContainer> {
             color: Colors.grey[600],
           ),
         ),
-        margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+        margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
       ),
     );
-    ;
   }
 }

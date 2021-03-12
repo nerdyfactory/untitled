@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/widgets/photo_container.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:untitled/widgets/map_container.dart';
+import 'package:untitled/widgets/marker_setter.dart';
 import 'package:untitled/widgets/upload_container.dart';
 
 class PhotoUpload extends StatelessWidget {
@@ -12,6 +14,16 @@ class PhotoUpload extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        backgroundColor: Colors.white70,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+          onPressed: () => Navigator.pop(context, false),
+        ),
+        foregroundColor: Colors.black,
         actions: <Widget>[
           Padding(
               padding: EdgeInsets.all(10),
@@ -19,7 +31,7 @@ class PhotoUpload extends StatelessWidget {
                 width: 100.0,
                 height: 8.0,
                 child: ElevatedButton(
-                  child: Text('Submit'),
+                  child: Text('SUBMIT'),
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                       primary: Colors.purple,
@@ -27,7 +39,7 @@ class PhotoUpload extends StatelessWidget {
                       textStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          fontFamily: 'roboto')),
+                          fontFamily: 'Roboto')),
                 ),
               ))
         ],
@@ -35,7 +47,7 @@ class PhotoUpload extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[UploadContainer()],
+          children: <Widget>[UploadContainer(), MarkerSetter()],
         ),
       ),
     );
