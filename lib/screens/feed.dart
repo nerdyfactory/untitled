@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/widgets/photo_container.dart';
 
 class Feed extends StatelessWidget {
   Feed({this.title = ""});
@@ -8,16 +9,29 @@ class Feed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      // appBar: AppBar(
+      //   title: Text(title),
+      // ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Text('Card $title'),
+            PhotoContainer(path: "Image 1"),
+            PhotoContainer(path: "Image 2"),
           ],
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, '/map');
+        },
+        icon: Icon(Icons.location_on),
+        label: Text("Map"),
+        backgroundColor: Colors.white.withOpacity(0.9),
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
     );
   }

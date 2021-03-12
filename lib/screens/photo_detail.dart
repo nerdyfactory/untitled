@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/widgets/photo_container.dart';
 
 class PhotoDetail extends StatelessWidget {
   PhotoDetail({this.title = ""});
@@ -16,6 +17,7 @@ class PhotoDetail extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Card $title'),
+            PhotoContainer(path: "imagePath")
           ],
         ),
       ),
