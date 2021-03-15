@@ -10,8 +10,8 @@ class _MarkerSetterState extends State<MarkerSetter> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: (MediaQuery.of(context).size.width * 1) / 1.2,
-        width: MediaQuery.of(context).size.width * 1,
+        height: 320,
+        width: 393,
         child: Card(
             color: Colors.grey[400],
             semanticContainer: true,

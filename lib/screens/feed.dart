@@ -8,13 +8,14 @@ class Feed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       // appBar: AppBar(
       //   title: Text(title),
       // ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             PhotoContainer(path: "Image 1"),
             PhotoContainer(path: "Image 2"),
@@ -33,6 +34,6 @@ class Feed extends StatelessWidget {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
       ),
-    );
+    ));
   }
 }

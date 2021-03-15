@@ -9,8 +9,8 @@ class _UploadContainerState extends State<UploadContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.width * 1,
-      width: MediaQuery.of(context).size.width * 1,
+      height: 262,
+      width: 393,
       child: Card(
         color: Colors.grey[400],
         semanticContainer: true,

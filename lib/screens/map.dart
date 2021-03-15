@@ -16,22 +16,6 @@ class Map extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             MapContainer(),
-            Align(
-              alignment: Alignment.topRight,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states) {
-                      return Colors.green;
-                    },
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/photo_upload');
-                },
-                child: Text("Upload"),
-              ),
-            ),
           ],
         ),
       ),

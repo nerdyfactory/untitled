@@ -9,18 +9,20 @@ class MapContainer extends StatefulWidget {
 class _MapContainerState extends State<MapContainer> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SafeArea(
+        child: Stack(children: <Widget>[
+      Expanded(
         flex: 1,
         child: Container(
-          height: MediaQuery.of(context).size.width * 1,
+          height: MediaQuery.of(context).size.width * 2,
           width: MediaQuery.of(context).size.width * 1,
           child: Card(
             color: Colors.grey[400],
             semanticContainer: true,
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
             child: GoogleMap(
-              mapType: MapType.hybrid,
+              mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
                   bearing: 192.8334901395799,
                   target: LatLng(37.43296265331129, -122.08832357078792),
@@ -28,6 +30,19 @@ class _MapContainerState extends State<MapContainer> {
                   zoom: 19.151926040649414),
             ),
           ),
-        ));
+        ),
+      ),
+      Positioned(
+        top: 25,
+        right: 12,
+        child: IconButton(
+          iconSize: 30,
+          icon: const Icon(Icons.add_location_alt),
+          onPressed: () {
+            Navigator.pushNamed(context, '/photo_upload');
+          },
+        ),
+      )
+    ]));
   }
 }

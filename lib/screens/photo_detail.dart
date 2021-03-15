@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/widgets/map_container.dart';
 import 'package:untitled/widgets/photo_container.dart';
 
 class PhotoDetail extends StatelessWidget {
@@ -15,10 +16,7 @@ class PhotoDetail extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Card $title'),
-            PhotoContainer(path: "imagePath")
-          ],
+          children: <Widget>[PhotoContainer(path: "imagePath"), MapContainer()],
         ),
       ),
     );
