@@ -97,7 +97,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                     ),
                   ),
             Container(
-                height: 320,
+                height: MediaQuery.of(context).size.height * 0.50,
                 width: 393,
                 child: Card(
                     color: Colors.grey[400],
