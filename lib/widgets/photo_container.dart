@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class PhotoContainer extends StatelessWidget {
   PhotoContainer({required this.path});
@@ -9,7 +7,6 @@ class PhotoContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Colors.green[400]);
     return Container(
       height: 262,
       width: 393,
@@ -20,7 +17,7 @@ class PhotoContainer extends StatelessWidget {
         child: Center(
           child: Icon(Icons.photo),
         ),
-        margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+        margin: EdgeInsets.fromLTRB(9, 9, 9, 0),
       ),
     );
   }

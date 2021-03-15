@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:untitled/widgets/add_location.dart';
 
 class MapContainer extends StatefulWidget {
   @override
@@ -32,17 +33,7 @@ class _MapContainerState extends State<MapContainer> {
           ),
         ),
       ),
-      Positioned(
-        top: 25,
-        right: 12,
-        child: IconButton(
-          iconSize: 30,
-          icon: const Icon(Icons.add_location_alt),
-          onPressed: () {
-            Navigator.pushNamed(context, '/photo_upload');
-          },
-        ),
-      )
+      AddLocationIcon()
     ]));
   }
 }

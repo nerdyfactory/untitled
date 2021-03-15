@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/widgets/photo_container.dart';
+import 'package:untitled/widgets/add_location.dart';
 
 class Feed extends StatelessWidget {
   Feed({this.title = ""});
@@ -14,13 +15,16 @@ class Feed extends StatelessWidget {
       //   title: Text(title),
       // ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            PhotoContainer(path: "Image 1"),
-            PhotoContainer(path: "Image 2"),
-          ],
-        ),
+        child: Stack(children: <Widget>[
+          ListView(
+            children: <Widget>[
+              PhotoContainer(path: "Image 1"),
+              PhotoContainer(path: "Image 2"),
+              PhotoContainer(path: "Image 3")
+            ],
+          ),
+          AddLocationIcon()
+        ]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
