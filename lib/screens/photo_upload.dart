@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PhotoUpload extends StatefulWidget {
   PhotoUpload({this.title = ""});
 
   final String title;
-
   @override
   _PhotoUploadState createState() => _PhotoUploadState();
 }
@@ -18,6 +18,13 @@ class _PhotoUploadState extends State<PhotoUpload> {
   File? _image;
   final picker = ImagePicker();
   List<Marker> myMarker = [];
+  late LatLng initialPosition = LatLng(33.33, 77.77);
+
+  void initState() {
+    super.initState();
+    _onStart();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,11 +113,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
                     margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
                     child: GoogleMap(
                       mapType: MapType.hybrid,
-                      initialCameraPosition: CameraPosition(
-                          bearing: 192.8334901395799,
-                          target:
-                              LatLng(37.43296265331129, -122.08832357078792),
-                          zoom: 4),
+                      initialCameraPosition:
+                          CameraPosition(target: initialPosition, zoom: 5),
                       markers: Set.from(myMarker),
                       onTap: _handleMapTap,
                     )))
@@ -120,20 +124,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
     );
   }
 
-  Future getImageFromCamera() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  Future getImage(ImageSource source) async {
+    final pickedFile = await picker.getImage(source: source);
 
     setState(() {
       if (pickedFile != null) {
@@ -155,7 +147,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
             "Camera",
             style: TextStyle(color: Colors.white, fontSize: 18),
           ),
-          onPressed: () => {getImageFromCamera(), Navigator.pop(context)},
+          onPressed: () =>
+              {getImage(ImageSource.camera), Navigator.pop(context)},
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),
         DialogButton(
@@ -163,7 +156,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
             "Gallery",
             style: TextStyle(color: Colors.white, fontSize: 18),
           ),
-          onPressed: () => {getImageFromGallery(), Navigator.pop(context)},
+          onPressed: () =>
+              {getImage(ImageSource.gallery), Navigator.pop(context)},
           gradient: LinearGradient(colors: [
             Color.fromRGBO(116, 116, 191, 1.0),
             Color.fromRGBO(52, 138, 199, 1.0),
@@ -173,11 +167,48 @@ class _PhotoUploadState extends State<PhotoUpload> {
     ).show();
   }
 
-  _handleMapTap(LatLng tappedPoint) {
+  _handleMapTap(LatLng tappedPoint) async {
     setState(() {
       myMarker = [];
       myMarker.add(Marker(
           markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
     });
+  }
+
+  _onStart() async {
+    Position pos = await _determinePosition();
+    setState(() {
+      initialPosition = LatLng(pos.latitude, pos.longitude);
+      myMarker = [];
+      myMarker.add(Marker(
+          markerId: MarkerId(initialPosition.toString()),
+          position: initialPosition));
+    });
+    print(pos);
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openAppSettings();
+      await Geolocator.openLocationSettings();
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 }
