@@ -15,7 +15,7 @@ class PhotoUpload extends StatefulWidget {
 }
 
 class _PhotoUploadState extends State<PhotoUpload> {
-  File? _image = null;
+  File? _image;
   final picker = ImagePicker();
   List<Marker> myMarker = [];
   @override
