@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/widgets/photo_container.dart';
-import 'package:untitled/widgets/add_location.dart';
+import 'package:untitled/widgets.dart';
 
 class Feed extends StatelessWidget {
-  Feed({this.title = ""});
-
-  final String title;
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      // appBar: AppBar(
-      //   title: Text(title),
-      // ),
       body: Center(
         child: Stack(children: <Widget>[
           ListView(

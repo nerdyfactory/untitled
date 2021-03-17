@@ -7,9 +7,6 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PhotoUpload extends StatefulWidget {
-  PhotoUpload({this.title = ""});
-
-  final String title;
   @override
   _PhotoUploadState createState() => _PhotoUploadState();
 }
@@ -29,7 +26,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Photo upload"),
         backgroundColor: Colors.white70,
         elevation: 0,
         leading: IconButton(

@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/widgets/map_container.dart';
+import 'package:untitled/widgets.dart';
 
 class Map extends StatelessWidget {
-  Map({this.title = ""});
-  final String title;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(title),
-      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

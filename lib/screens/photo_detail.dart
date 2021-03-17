@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:untitled/widgets/photo_container.dart';
+import 'package:untitled/widgets.dart';
 
 class PhotoDetail extends StatelessWidget {
-  PhotoDetail({this.title = ""});
-
-  final String title;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Text(this.title),
         backgroundColor: Colors.white70,
         elevation: 0,
         leading: IconButton(
