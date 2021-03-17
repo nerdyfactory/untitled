@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:untitled/models/Photo.dart';
+import 'package:device_info/device_info.dart';
+import 'package:untitled/utils/PhotoUploader.dart';
 
 class PhotoUpload extends StatefulWidget {
   @override
@@ -45,7 +49,18 @@ class _PhotoUploadState extends State<PhotoUpload> {
                 height: 8.0,
                 child: ElevatedButton(
                   child: Text('SUBMIT'),
-                  onPressed: () {},
+                  onPressed: () async {
+                    Photo photo = new Photo(_image!, "photoa");
+                    PhotoUploader uploader = PhotoUploader(photo);
+                    uploader.uploadImageToFirebase(photo);
+                    print("**********");
+                    print(photo.location.path);
+                    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+                    AndroidDeviceInfo androidInfo =
+                        await deviceInfo.androidInfo;
+                    print('Running on ${androidInfo.id}');
+                    print("**********");
+                  },
                   style: ElevatedButton.styleFrom(
                       primary: Colors.purple,
                       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -123,7 +138,6 @@ class _PhotoUploadState extends State<PhotoUpload> {
 
   Future getImage(ImageSource source) async {
     final pickedFile = await picker.getImage(source: source);
-
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
