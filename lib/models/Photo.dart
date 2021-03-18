@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Photo {
-  File location;
+  LatLng location;
   String uid;
-  Photo(this.location, this.uid);
+  File image;
+  Photo(this.location, this.uid, this.image);
 }

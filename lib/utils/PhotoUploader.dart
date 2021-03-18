@@ -7,33 +7,42 @@ class PhotoUploader {
   Photo photo;
   String? downloadUrl;
   PhotoUploader(this.photo);
+  bool uploading = false;
   final databaseReference = Firestore.FirebaseFirestore.instance;
-  Future create() async {
-    await databaseReference
-        .collection("photos")
-        .doc(photo.uid)
-        .set({'location': downloadUrl, 'uid': photo.uid})
-        .whenComplete(() => print("+++++++++++ completed +++++++++++"))
-        .onError((error, stackTrace) => print("Errrrrrrrrrrrrrrrrrrrror"));
+  Future<bool> create() async {
+    await databaseReference.collection(photo.uid).add({
+      'location': {
+        'latitude': photo.location.latitude,
+        'longitude': photo.location.longitude
+      },
+      'uid': photo.uid,
+      'downloadUrl': downloadUrl
+    }).whenComplete(() {
+      uploading = true;
+    }).catchError((onError) {
+      print("Error");
+    });
+    return uploading;
   }
 
-  Future uploadImageToFirebase(Photo photo) async {
-    String fileName = Path.basename(photo.location.path);
+  Future<bool> uploadImageToFirebase(Photo photo) async {
+    String fileName = Path.basename(photo.image.path);
     firebase_storage.Reference storageReference = firebase_storage
         .FirebaseStorage.instance
         .ref()
         .child('photos')
-        .child('$fileName');
+        .child(fileName);
     firebase_storage.UploadTask uploadTask =
-        storageReference.putFile(photo.location);
+        storageReference.putFile(photo.image);
     try {
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       downloadUrl = await taskSnapshot.ref.getDownloadURL();
       print("Download Link is $downloadUrl");
 
-      await create();
+      return await create();
     } catch (e) {
       print("Erro while uploading file please try again");
+      return uploading;
     }
   }
 }

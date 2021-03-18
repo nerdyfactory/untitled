@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,8 +20,8 @@ class _PhotoUploadState extends State<PhotoUpload> {
   File? _image;
   final picker = ImagePicker();
   List<Marker> myMarker = [];
-  late LatLng initialPosition = LatLng(33.33, 77.77);
-
+  late LatLng initialPosition;
+  bool uploading = false;
   void initState() {
     super.initState();
     _onStart();
@@ -29,110 +30,137 @@ class _PhotoUploadState extends State<PhotoUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Photo upload"),
-        backgroundColor: Colors.white70,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-          onPressed: () => Navigator.pop(context, false),
-        ),
-        foregroundColor: Colors.black,
-        actions: <Widget>[
-          Padding(
-              padding: EdgeInsets.all(10),
-              child: SizedBox(
-                width: 100.0,
-                height: 8.0,
-                child: ElevatedButton(
-                  child: Text('SUBMIT'),
-                  onPressed: () async {
-                    Photo photo = new Photo(_image!, "photoa");
-                    PhotoUploader uploader = PhotoUploader(photo);
-                    uploader.uploadImageToFirebase(photo);
-                    print("**********");
-                    print(photo.location.path);
-                    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-                    AndroidDeviceInfo androidInfo =
-                        await deviceInfo.androidInfo;
-                    print('Running on ${androidInfo.id}');
-                    print("**********");
-                  },
-                  style: ElevatedButton.styleFrom(
-                      primary: Colors.purple,
-                      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                      textStyle: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          fontFamily: 'Roboto')),
+      appBar: uploading
+          ? null
+          : AppBar(
+              title: Text("Photo upload"),
+              backgroundColor: Colors.white70,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
                 ),
-              ))
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _image != null
-                ? Stack(children: [
-                    Container(
-                      height: 262,
-                      width: 393,
-                      child: Image.file(
-                        _image!,
+                onPressed: () => Navigator.pop(context, false),
+              ),
+              foregroundColor: Colors.black,
+              actions: <Widget>[
+                Padding(
+                    padding: EdgeInsets.all(10),
+                    child: SizedBox(
+                      width: 100.0,
+                      height: 8.0,
+                      child: ElevatedButton(
+                        child: Text('SUBMIT'),
+                        onPressed: () async {
+                          // ignore: unnecessary_null_comparison
+                          if (_image != null && initialPosition != null) {
+                            uploading = true;
+                            setState(() {});
+                            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+                            AndroidDeviceInfo androidInfo =
+                                await deviceInfo.androidInfo;
+                            Photo photo = new Photo(
+                                initialPosition, androidInfo.id, _image!);
+                            PhotoUploader uploader = PhotoUploader(photo);
+                            bool uploaded =
+                                await uploader.uploadImageToFirebase(photo);
+
+                            if (uploaded) {
+                              _showAlert(context, "Photo is uploaded");
+                              uploading = false;
+                              _image = null;
+                              setState(() {});
+                            }
+                          } else {
+                            _showAlert(context,
+                                "Please select photo and location properly");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.purple,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 5),
+                            textStyle: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                fontFamily: 'Roboto')),
                       ),
-                    ),
-                    Positioned(
-                        top: 3,
-                        right: 6,
-                        child: IconButton(
-                          icon: Icon(Icons.highlight_off),
-                          color: Colors.white,
-                          iconSize: 30,
-                          onPressed: () => {
-                            setState(() => {_image = null})
-                          },
-                        ))
-                  ])
-                : Container(
-                    height: 262,
-                    width: 393,
-                    child: Card(
-                      color: Colors.grey[400],
-                      semanticContainer: true,
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: Center(
-                        child: IconButton(
-                          iconSize: (MediaQuery.of(context).size.width * 1) / 2,
-                          color: Colors.grey[600],
-                          icon: Icon(Icons.add),
-                          onPressed: () => {_onAlertButtonsPressed(context)},
+                    ))
+              ],
+            ),
+      body: uploading
+          ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                  Text("Uploading File ... "),
+                  CupertinoActivityIndicator(animating: true, radius: 20)
+                ]))
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  _image != null
+                      ? Stack(children: [
+                          Container(
+                            height: 262,
+                            width: 393,
+                            color: Colors.grey,
+                            child: Image.file(
+                              _image!,
+                            ),
+                          ),
+                          Positioned(
+                              top: 3,
+                              right: 6,
+                              child: IconButton(
+                                icon: Icon(Icons.highlight_off),
+                                color: Colors.white,
+                                iconSize: 30,
+                                onPressed: () => {
+                                  setState(() => {_image = null})
+                                },
+                              ))
+                        ])
+                      : Container(
+                          height: 262,
+                          width: 393,
+                          child: Card(
+                            color: Colors.grey[400],
+                            semanticContainer: true,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            child: Center(
+                              child: IconButton(
+                                iconSize:
+                                    (MediaQuery.of(context).size.width * 1) / 2,
+                                color: Colors.grey[600],
+                                icon: Icon(Icons.add),
+                                onPressed: () =>
+                                    {_onAlertButtonsPressed(context)},
+                              ),
+                            ),
+                            margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                          ),
                         ),
-                      ),
-                      margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
-                    ),
-                  ),
-            Container(
-                height: MediaQuery.of(context).size.height * 0.50,
-                width: 393,
-                child: Card(
-                    color: Colors.grey[400],
-                    semanticContainer: true,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
-                    child: GoogleMap(
-                      mapType: MapType.hybrid,
-                      initialCameraPosition:
-                          CameraPosition(target: initialPosition, zoom: 5),
-                      markers: Set.from(myMarker),
-                      onTap: _handleMapTap,
-                    )))
-          ],
-        ),
-      ),
+                  Container(
+                      height: MediaQuery.of(context).size.height * 0.50,
+                      width: 393,
+                      child: Card(
+                          color: Colors.grey[400],
+                          semanticContainer: true,
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
+                          child: GoogleMap(
+                            mapType: MapType.hybrid,
+                            initialCameraPosition: CameraPosition(
+                                target: initialPosition, zoom: 5),
+                            markers: Set.from(myMarker),
+                            onTap: _handleMapTap,
+                          )))
+                ],
+              ),
+            ),
     );
   }
 
@@ -178,6 +206,24 @@ class _PhotoUploadState extends State<PhotoUpload> {
     ).show();
   }
 
+  _showAlert(context, msg) {
+    Alert(
+      context: context,
+      title: "Uploading",
+      desc: msg,
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Cool",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () => {Navigator.pop(context)},
+          color: Color.fromRGBO(0, 179, 134, 1.0),
+        ),
+      ],
+    ).show();
+  }
+
   _handleMapTap(LatLng tappedPoint) async {
     setState(() {
       myMarker = [];
@@ -188,8 +234,9 @@ class _PhotoUploadState extends State<PhotoUpload> {
 
   _onStart() async {
     Position pos = await _determinePosition();
+    initialPosition = LatLng(pos.latitude, pos.longitude);
+
     setState(() {
-      initialPosition = LatLng(pos.latitude, pos.longitude);
       myMarker = [];
       myMarker.add(Marker(
           markerId: MarkerId(initialPosition.toString()),
