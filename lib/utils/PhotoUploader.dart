@@ -1,0 +1,48 @@
+import 'package:untitled/models/Photo.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path/path.dart' as Path;
+import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
+
+class PhotoUploader {
+  Photo photo;
+  String? downloadUrl;
+  PhotoUploader(this.photo);
+  bool uploading = false;
+  final databaseReference = Firestore.FirebaseFirestore.instance;
+  Future<bool> create() async {
+    await databaseReference.collection(photo.uid).add({
+      'location': {
+        'latitude': photo.location.latitude,
+        'longitude': photo.location.longitude
+      },
+      'uid': photo.uid,
+      'downloadUrl': downloadUrl
+    }).whenComplete(() {
+      uploading = true;
+    }).catchError((onError) {
+      print("Error");
+    });
+    return uploading;
+  }
+
+  Future<bool> uploadImageToFirebase(Photo photo) async {
+    String fileName = Path.basename(photo.image.path);
+    firebase_storage.Reference storageReference = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child('photos')
+        .child(fileName);
+    firebase_storage.UploadTask uploadTask =
+        storageReference.putFile(photo.image);
+    try {
+      firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+      downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      print("Download Link is $downloadUrl");
+
+      return await create();
+    } catch (e) {
+      print("Erro while uploading file please try again");
+      return uploading;
+    }
+  }
+}
