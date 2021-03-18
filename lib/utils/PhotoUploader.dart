@@ -1,7 +1,9 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/models/Photo.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
+import 'package:untitled/utils/PhotoQuery.dart';
 
 class PhotoUploader {
   Photo photo;
@@ -10,7 +12,7 @@ class PhotoUploader {
   bool uploading = false;
   final databaseReference = Firestore.FirebaseFirestore.instance;
   Future<bool> create() async {
-    await databaseReference.collection(photo.uid).add({
+    await databaseReference.collection("photos").add({
       'location': {
         'latitude': photo.location.latitude,
         'longitude': photo.location.longitude
@@ -22,6 +24,9 @@ class PhotoUploader {
     }).catchError((onError) {
       print("Error");
     });
+    PhotoQuery query = PhotoQuery(
+        LatLng(32.323232323, 77.00000000), LatLng(34.000000, 78.0000000));
+    print(await query.getPhotos());
     return uploading;
   }
 
@@ -38,10 +43,9 @@ class PhotoUploader {
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       downloadUrl = await taskSnapshot.ref.getDownloadURL();
       print("Download Link is $downloadUrl");
-
       return await create();
     } catch (e) {
-      print("Erro while uploading file please try again");
+      print(e);
       return uploading;
     }
   }

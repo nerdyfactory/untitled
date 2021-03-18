@@ -69,6 +69,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                               _showAlert(context, "Photo is uploaded");
                               uploading = false;
                               _image = null;
+
                               setState(() {});
                             }
                           } else {
