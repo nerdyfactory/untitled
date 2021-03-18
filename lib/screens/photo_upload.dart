@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:untitled/models/Photo.dart';
-import 'package:device_info/device_info.dart';
 import 'package:untitled/utils/PhotoUploader.dart';
 
 class PhotoUpload extends StatefulWidget {
@@ -57,11 +57,10 @@ class _PhotoUploadState extends State<PhotoUpload> {
                           if (_image != null && initialPosition != null) {
                             uploading = true;
                             setState(() {});
-                            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-                            AndroidDeviceInfo androidInfo =
-                                await deviceInfo.androidInfo;
-                            Photo photo = new Photo(
-                                initialPosition, androidInfo.id, _image!);
+                            UserCredential userCredential =
+                                await FirebaseAuth.instance.signInAnonymously();
+                            Photo photo = new Photo(initialPosition,
+                                userCredential.user!.uid, _image!);
                             PhotoUploader uploader = PhotoUploader(photo);
                             bool uploaded =
                                 await uploader.uploadImageToFirebase(photo);
