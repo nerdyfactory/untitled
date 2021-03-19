@@ -16,16 +16,27 @@ class PhotoContainer extends StatelessWidget {
           );
         },
         child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                offset: Offset(0.0, 1.0),
+                blurRadius: 6.0,
+              ),
+            ],
+          ),
           height: 262,
           width: 393,
           child: Card(
             color: Colors.grey[400],
             semanticContainer: true,
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            child: Center(
-              // ignore: unnecessary_null_comparison
-              child: path != null ? Image.network(path) : Icon(Icons.photo),
-            ),
+            child: path != null
+                ? Image.network(
+                    path,
+                    fit: BoxFit.fill,
+                  )
+                : Icon(Icons.photo),
             margin: EdgeInsets.fromLTRB(9, 9, 9, 0),
           ),
         ));
