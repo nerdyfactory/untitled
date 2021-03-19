@@ -20,8 +20,9 @@ class _PhotoUploadState extends State<PhotoUpload> {
   File? _image;
   final picker = ImagePicker();
   List<Marker> myMarker = [];
-  late LatLng initialPosition;
+  late LatLng initialPosition = LatLng(35.9078, 127.7669);
   bool uploading = false;
+  var mapController;
   void initState() {
     super.initState();
     _onStart();
@@ -151,7 +152,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
                           child: GoogleMap(
-                            mapType: MapType.hybrid,
+                            onMapCreated: _mapCreated,
                             initialCameraPosition: CameraPosition(
                                 target: initialPosition, zoom: 5),
                             markers: Set.from(myMarker),
@@ -161,6 +162,10 @@ class _PhotoUploadState extends State<PhotoUpload> {
               ),
             ),
     );
+  }
+
+  _mapCreated(GoogleMapController controller) {
+    mapController = controller;
   }
 
   Future getImage(ImageSource source) async {
@@ -224,17 +229,20 @@ class _PhotoUploadState extends State<PhotoUpload> {
   }
 
   _handleMapTap(LatLng tappedPoint) async {
-    setState(() {
-      myMarker = [];
-      myMarker.add(Marker(
-          markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
-    });
+    myMarker = [];
+    myMarker.add(Marker(
+        markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
+    initialPosition = tappedPoint;
+    setState(() {});
   }
 
   _onStart() async {
     Position pos = await _determinePosition();
     initialPosition = LatLng(pos.latitude, pos.longitude);
-
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: initialPosition,
+      zoom: 10,
+    )));
     setState(() {
       myMarker = [];
       myMarker.add(Marker(
