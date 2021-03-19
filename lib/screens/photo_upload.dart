@@ -246,10 +246,18 @@ class _PhotoUploadState extends State<PhotoUpload> {
     setState(() {
       myMarker = [];
       myMarker.add(Marker(
+          onTap: _zoomIn,
           markerId: MarkerId(initialPosition.toString()),
           position: initialPosition));
     });
     print(pos);
+  }
+
+  _zoomIn() {
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: initialPosition,
+      zoom: 15,
+    )));
   }
 
   Future<Position> _determinePosition() async {
