@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/widgets.dart';
 
@@ -6,17 +7,50 @@ class Feed extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: Center(
-        child: Stack(children: <Widget>[
-          ListView(
-            children: <Widget>[
-              PhotoContainer(path: "Image 1"),
-              PhotoContainer(path: "Image 2"),
-              PhotoContainer(path: "Image 3")
-            ],
-          ),
-          AddLocationIcon()
-        ]),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('photos').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData)
+            return new Stack(
+              children: [
+                Center(
+                    child: Container(
+                  width: 200,
+                  height: 200,
+                  child: Text(
+                    "Loading Photos ....",
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+                AddLocationIcon()
+              ],
+            );
+          if (snapshot.data!.size == 0)
+            return new Stack(
+              children: [
+                Center(
+                    child: Container(
+                  width: 200,
+                  height: 200,
+                  child: Text(
+                    "No data yet please create one",
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+                AddLocationIcon()
+              ],
+            );
+          return new Stack(children: [
+            ListView(
+              children: snapshot.data!.docs.map((document) {
+                return new PhotoContainer(
+                  path: document.data()!["downloadUrl"],
+                );
+              }).toList(),
+            ),
+            AddLocationIcon()
+          ]);
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
