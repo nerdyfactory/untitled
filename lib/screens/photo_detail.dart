@@ -3,8 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/widgets.dart';
 
 class PhotoDetail extends StatelessWidget {
-  List<Marker> myMarker = [];
-
   @override
   Widget build(BuildContext context) {
     var routeArgs = ModalRoute.of(context)!.settings.arguments;
