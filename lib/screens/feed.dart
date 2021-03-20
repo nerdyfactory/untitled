@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/routes.dart';
 import 'package:untitled/widgets.dart';
 
 class Feed extends StatelessWidget {
@@ -43,9 +44,18 @@ class Feed extends StatelessWidget {
           return new Stack(children: [
             ListView(
               children: snapshot.data!.docs.map((document) {
-                return new PhotoContainer(
-                  path: document.data()!["downloadUrl"],
-                );
+                return new GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.photo_detail,
+                          arguments: {
+                            'path': document.data()!["downloadUrl"],
+                            'longitude': document.data()!['location'].longitude,
+                            'latitude': document.data()!['location'].latitude
+                          });
+                    },
+                    child: PhotoContainer(
+                      path: document.data()!["downloadUrl"],
+                    ));
               }).toList(),
             ),
             AddLocationIcon()
