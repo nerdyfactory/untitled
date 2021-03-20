@@ -10,7 +10,8 @@ class PhotoDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white70,
+        toolbarHeight: 42,
+        backgroundColor: Colors.white24,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
@@ -23,29 +24,29 @@ class PhotoDetail extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            PhotoContainer(path: photoDetails[0]),
+            PhotoContainer(
+              path: photoDetails[0],
+              marginTop: 0.0,
+              height: MediaQuery.of(context).size.height / 2.2,
+            ),
             Container(
-                height: MediaQuery.of(context).size.height * 0.50,
+                padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+                height: MediaQuery.of(context).size.height / 2.2 - 16,
                 width: 393,
-                child: Card(
-                    color: Colors.grey[400],
-                    semanticContainer: true,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
-                    child: GoogleMap(
-                      mapType: MapType.hybrid,
-                      markers: {
-                        Marker(
-                            markerId: MarkerId(photoDetails[0]),
-                            position: LatLng(photoDetails[1], photoDetails[2]))
-                      },
-                      initialCameraPosition: CameraPosition(
-                          bearing: 192.8334901395799,
-                          target: LatLng(photoDetails[1], photoDetails[2]),
-                          zoom: 15),
-                    )))
+                child: GoogleMap(
+                  mapType: MapType.hybrid,
+                  markers: {
+                    Marker(
+                        markerId: MarkerId(photoDetails[0]),
+                        position: LatLng(photoDetails[1], photoDetails[2]))
+                  },
+                  initialCameraPosition: CameraPosition(
+                      bearing: 192.8334901395799,
+                      target: LatLng(photoDetails[1], photoDetails[2]),
+                      zoom: 15),
+                ))
           ],
         ),
       ),

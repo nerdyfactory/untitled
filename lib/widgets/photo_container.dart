@@ -1,37 +1,27 @@
 import 'package:flutter/material.dart';
 
 class PhotoContainer extends StatelessWidget {
-  PhotoContainer({
-    required this.path,
-  });
+  PhotoContainer(
+      {required this.path, required this.marginTop, required this.height});
 
   final String path;
+  final double marginTop;
+  final double height;
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            offset: Offset(0.0, 1.0),
-            blurRadius: 6.0,
-          ),
-        ],
+        color: Colors.grey,
       ),
-      height: 262,
+      height: this.height,
       width: 393,
-      child: Card(
-        color: Colors.grey[400],
-        semanticContainer: true,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: path != null
-            ? Image.network(
-                path,
-                fit: BoxFit.fill,
-              )
-            : Icon(Icons.photo),
-        margin: EdgeInsets.fromLTRB(9, 9, 9, 0),
-      ),
+      child: path != null
+          ? Image.network(
+              path,
+              fit: BoxFit.fill,
+            )
+          : Icon(Icons.photo),
+      margin: EdgeInsets.fromLTRB(9, marginTop, 9, 0),
     );
   }
 }

@@ -55,6 +55,8 @@ class Feed extends StatelessWidget {
                     },
                     child: PhotoContainer(
                       path: document.data()!["downloadUrl"],
+                      marginTop: 9,
+                      height: 262,
                     ));
               }).toList(),
             ),
