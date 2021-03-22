@@ -16,10 +16,9 @@ class PhotoContainer extends StatelessWidget {
       height: this.height,
       width: 393,
       child: path != null
-          ? Image.network(
-              path,
-              fit: BoxFit.fill,
-            )
+          ? AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.network(path, fit: BoxFit.cover))
           : Icon(Icons.photo),
       margin: EdgeInsets.fromLTRB(9, marginTop, 9, 0),
     );

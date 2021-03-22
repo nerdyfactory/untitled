@@ -34,7 +34,7 @@ class Feed extends StatelessWidget {
                   width: 200,
                   height: 200,
                   child: Text(
-                    "No data yet please create one",
+                    "No Photo yet please Add one",
                     textAlign: TextAlign.center,
                   ),
                 )),
