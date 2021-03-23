@@ -34,7 +34,6 @@ class PhotoQuery {
       photos.add(PhotoData(LatLng(geoPoint.latitude, geoPoint.longitude),
           document.data()!["uid"], document.data()!["downloadUrl"]));
     });
-    print(photos);
     return photos;
   }
 }

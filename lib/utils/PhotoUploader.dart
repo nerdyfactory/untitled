@@ -1,9 +1,7 @@
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/models/Photo.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
-import 'package:untitled/utils/PhotoQuery.dart';
 
 class PhotoUploader {
   Photo photo;
@@ -23,9 +21,7 @@ class PhotoUploader {
     }).catchError((onError) {
       print("Error");
     });
-    PhotoQuery query = PhotoQuery(
-        LatLng(33.6043888, 73.11627440000002), LatLng(36.000000, 79.0000000));
-    print(await query.getPhotos());
+
     return uploading;
   }
 
