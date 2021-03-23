@@ -5,9 +5,13 @@ import 'package:untitled/widgets.dart';
 class PhotoDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var routeArgs = ModalRoute.of(context)!.settings.arguments;
+    var photoDetails = _getArguments(routeArgs);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white70,
+        toolbarHeight: 42,
+        backgroundColor: Colors.white24,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
@@ -20,28 +24,45 @@ class PhotoDetail extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            PhotoContainer(path: "imagePath"),
+            PhotoContainer(
+              path: photoDetails[0],
+              marginTop: 0.0,
+              height: MediaQuery.of(context).size.height / 2.2,
+            ),
             Container(
-                height: MediaQuery.of(context).size.height * 0.50,
+                padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+                height: MediaQuery.of(context).size.height / 2.2 - 16,
                 width: 393,
-                child: Card(
-                    color: Colors.grey[400],
-                    semanticContainer: true,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
-                    child: GoogleMap(
-                      mapType: MapType.hybrid,
-                      initialCameraPosition: CameraPosition(
-                          bearing: 192.8334901395799,
-                          target:
-                              LatLng(37.43296265331129, -122.08832357078792),
-                          zoom: 4),
-                    )))
+                child: GoogleMap(
+                  mapType: MapType.hybrid,
+                  markers: {
+                    Marker(
+                        markerId: MarkerId(photoDetails[0]),
+                        position: LatLng(photoDetails[1], photoDetails[2]))
+                  },
+                  initialCameraPosition: CameraPosition(
+                      bearing: 192.8334901395799,
+                      target: LatLng(photoDetails[1], photoDetails[2]),
+                      zoom: 15),
+                ))
           ],
         ),
       ),
     );
+  }
+
+  List _getArguments(dynamic details) {
+    var uploadedPhotoDetails = details.toString().split(",");
+    var path =
+        uploadedPhotoDetails[0].replaceFirst("{", "").split("path: ")[1].trim();
+    var longitude =
+        double.parse(uploadedPhotoDetails[1].split("longitude: ")[1].trim());
+    var latitude = double.parse(uploadedPhotoDetails[2]
+        .replaceAll("}", "")
+        .split("latitude: ")[1]
+        .trim());
+    return [path, latitude, longitude];
   }
 }
