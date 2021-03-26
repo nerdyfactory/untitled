@@ -140,8 +140,12 @@ class _MapState extends State<Map> {
                 0 &&
             e.url != photo.url))
         .toList();
-    List<PhotoContainer> photoContainers = photosAtSameLocation
-        .map((e) => PhotoContainer(path: e.url, marginTop: 5, height: 262))
+    List<dynamic> photoContainers = photosAtSameLocation
+        .map((e) => GestureDetector(
+            onTap: () {
+              _navigateToDetail(e);
+            },
+            child: PhotoContainer(path: e.url, marginTop: 5, height: 262)))
         .toList();
 
     showMaterialModalBottomSheet(
@@ -158,12 +162,25 @@ class _MapState extends State<Map> {
             height: MediaQuery.of(context).size.height * 0.85,
             child: ListView(
               children: [
-                PhotoContainer(path: photo.url, marginTop: 5, height: 262),
+                GestureDetector(
+                    onTap: () {
+                      _navigateToDetail(photo);
+                    },
+                    child: PhotoContainer(
+                        path: photo.url, marginTop: 5, height: 262)),
                 ...photoContainers
               ],
             )),
       ),
     );
+  }
+
+  _navigateToDetail(dynamic e) {
+    Navigator.pushNamed(context, "/photo_detail", arguments: {
+      'path': e.url,
+      'longitude': e.location.longitude,
+      'latitude': e.location.latitude
+    });
   }
 
   Future<Uint8List?> _getMarkerIconBytes(GlobalKey markerKey) async {
