@@ -159,10 +159,6 @@ class _MapState extends State<Map> {
     showMaterialModalBottomSheet(
       context: context,
       enableDrag: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-      ),
       builder: (context) => SingleChildScrollView(
         padding: EdgeInsets.only(top: 8),
         controller: ModalScrollController.of(context),
