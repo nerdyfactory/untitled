@@ -145,29 +145,47 @@ class _MapState extends State<Map> {
             onTap: () {
               _navigateToDetail(e);
             },
-            child: PhotoContainer(path: e.url, marginTop: 5, height: 262)))
+            child: Container(
+                height: MediaQuery.of(context).size.height * 0.40,
+                width: MediaQuery.of(context).size.width * 0.49,
+                child: PhotoContainer(
+                  path: e.url,
+                  marginRight: 0,
+                  marginTop: 5,
+                  height: MediaQuery.of(context).size.height * 0.45,
+                ))))
         .toList();
 
     showMaterialModalBottomSheet(
       context: context,
-      isDismissible: true,
+      enableDrag: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10), topRight: Radius.circular(10)),
       ),
       builder: (context) => SingleChildScrollView(
+        padding: EdgeInsets.only(top: 8),
         controller: ModalScrollController.of(context),
         clipBehavior: Clip.antiAlias,
         child: Container(
-            height: MediaQuery.of(context).size.height * 0.85,
+            height: MediaQuery.of(context).size.height * 0.20,
+            padding: EdgeInsets.only(bottom: 5),
             child: ListView(
+              scrollDirection: Axis.horizontal,
               children: [
                 GestureDetector(
                     onTap: () {
                       _navigateToDetail(photo);
                     },
-                    child: PhotoContainer(
-                        path: photo.url, marginTop: 5, height: 262)),
+                    child: Container(
+                        height: MediaQuery.of(context).size.height * 0.40,
+                        width: MediaQuery.of(context).size.width * 0.49,
+                        child: PhotoContainer(
+                          path: photo.url,
+                          marginTop: 5,
+                          marginRight: 0,
+                          height: MediaQuery.of(context).size.width * 0.40,
+                        ))),
                 ...photoContainers
               ],
             )),

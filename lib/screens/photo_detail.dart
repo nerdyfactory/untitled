@@ -28,6 +28,7 @@ class PhotoDetail extends StatelessWidget {
           children: <Widget>[
             PhotoContainer(
               path: photoDetails[0],
+              marginRight: 9,
               marginTop: 0.0,
               height: MediaQuery.of(context).size.height / 2.2,
             ),
