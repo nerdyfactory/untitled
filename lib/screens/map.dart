@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/utils/PhotoQuery.dart';
 import 'package:untitled/widgets.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class Map extends StatefulWidget {
   @override
@@ -34,7 +35,7 @@ class _MapState extends State<Map> {
             cameraPositionForFetchingRecords.longitude + 5));
     _photos = await query.getPhotos();
 
-    _photos.forEach((user) {
+    _photos.forEach((photo) {
       _markerIconKeys.add(GlobalKey());
     });
     setState(() {});
@@ -105,19 +106,94 @@ class _MapState extends State<Map> {
     );
   }
 
-  void _addMarker(PhotoData user, int index) async {
+  void _addMarker(PhotoData photo, int index) async {
     Future.delayed(Duration(seconds: 1)).then((value) async {
-      if (renderedMarkers.contains(user.url)) return;
+      if (renderedMarkers.contains(photo.url)) return;
 
       var markerBytes = await _getMarkerIconBytes(_markerIconKeys[index]);
       if (markerBytes == null) return;
 
       _markers.add(Marker(
-          markerId: MarkerId(user.url),
-          position: user.location,
+          markerId: MarkerId(photo.url),
+          position: photo.location,
+          onTap: () {
+            this._printMasog(photo);
+          },
           icon: BitmapDescriptor.fromBytes(markerBytes)));
-      renderedMarkers.add(user.url);
+      renderedMarkers.add(photo.url);
       setState(() {});
+    });
+  }
+
+  _printMasog(PhotoData photo) {
+    List<PhotoData> photosAtSameLocation = [..._photos];
+    photosAtSameLocation = photosAtSameLocation
+        .where((e) => (e.location.latitude.toStringAsPrecision(4).compareTo(
+                    photo.location.latitude
+                        .toStringAsPrecision(4)
+                        .toString()) ==
+                0 &&
+            e.location.longitude.toStringAsPrecision(4).compareTo(photo
+                    .location.longitude
+                    .toStringAsPrecision(4)
+                    .toString()) ==
+                0 &&
+            e.url != photo.url))
+        .toList();
+    List<dynamic> photoContainers = photosAtSameLocation
+        .map((e) => GestureDetector(
+            onTap: () {
+              _navigateToDetail(e);
+            },
+            child: Container(
+                height: MediaQuery.of(context).size.height * 0.40,
+                width: MediaQuery.of(context).size.width * 0.60,
+                child: PhotoContainer(
+                  path: e.url,
+                  marginRight: 0,
+                  marginTop: 5,
+                  height: MediaQuery.of(context).size.height * 0.45,
+                ))))
+        .toList();
+
+    showMaterialModalBottomSheet(
+      context: context,
+      enableDrag: true,
+      builder: (context) => SingleChildScrollView(
+        padding: EdgeInsets.only(top: 8),
+        controller: ModalScrollController.of(context),
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+            height: MediaQuery.of(context).size.height * 0.20,
+            padding: EdgeInsets.only(bottom: 5),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                GestureDetector(
+                    onTap: () {
+                      _navigateToDetail(photo);
+                    },
+                    child: Container(
+                        height: MediaQuery.of(context).size.height * 0.40,
+                        width: MediaQuery.of(context).size.width * 0.60,
+                        child: PhotoContainer(
+                          path: photo.url,
+                          marginTop: 5,
+                          marginRight: 0,
+                          height: MediaQuery.of(context).size.width * 0.40,
+                        ))),
+                ...photoContainers
+              ],
+            )),
+      ),
+    );
+  }
+
+  _navigateToDetail(dynamic e) {
+    Navigator.pushNamed(context, "/photo_detail", arguments: {
+      'path': e.url,
+      'longitude': e.location.longitude,
+      'latitude': e.location.latitude
     });
   }
 

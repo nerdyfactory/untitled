@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 class PhotoContainer extends StatelessWidget {
   PhotoContainer(
-      {required this.path, required this.marginTop, required this.height});
+      {required this.path,
+      required this.marginTop,
+      required this.height,
+      required this.marginRight});
 
   final String path;
   final double marginTop;
   final double height;
+  final double marginRight;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,7 +24,7 @@ class PhotoContainer extends StatelessWidget {
               aspectRatio: 16 / 9,
               child: Image.network(path, fit: BoxFit.cover))
           : Icon(Icons.photo),
-      margin: EdgeInsets.fromLTRB(9, marginTop, 9, 0),
+      margin: EdgeInsets.fromLTRB(9, marginTop, marginRight, 0),
     );
   }
 }
