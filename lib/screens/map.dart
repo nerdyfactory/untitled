@@ -147,7 +147,7 @@ class _MapState extends State<Map> {
             },
             child: Container(
                 height: MediaQuery.of(context).size.height * 0.40,
-                width: MediaQuery.of(context).size.width * 0.49,
+                width: MediaQuery.of(context).size.width * 0.60,
                 child: PhotoContainer(
                   path: e.url,
                   marginRight: 0,
@@ -179,7 +179,7 @@ class _MapState extends State<Map> {
                     },
                     child: Container(
                         height: MediaQuery.of(context).size.height * 0.40,
-                        width: MediaQuery.of(context).size.width * 0.49,
+                        width: MediaQuery.of(context).size.width * 0.60,
                         child: PhotoContainer(
                           path: photo.url,
                           marginTop: 5,
