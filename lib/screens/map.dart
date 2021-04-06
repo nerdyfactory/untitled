@@ -48,7 +48,12 @@ class _MapState extends State<Map> {
         body: Stack(
           children: [
             if (_photos.isNotEmpty) _buildMarkerIconsContainer(),
-            _buildBody(),
+            GoogleMap(
+              initialCameraPosition:
+                  CameraPosition(target: _initialPosition, zoom: 15),
+              markers: _markers,
+              onCameraMove: _onCameraMove,
+            ),
             AddLocationIcon()
           ],
         ),
@@ -223,21 +228,5 @@ class _MapState extends State<Map> {
       cameraPositionForFetchingRecords = position.target;
       _getPhotos();
     }
-  }
-
-  Widget _buildBody() {
-    if (_initialPosition == null)
-      return Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.white,
-        child: Center(child: Text('Loading...')),
-      );
-
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(target: _initialPosition, zoom: 15),
-      markers: _markers,
-      onCameraMove: _onCameraMove,
-    );
   }
 }
