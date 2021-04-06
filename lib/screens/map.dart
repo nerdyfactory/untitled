@@ -49,10 +49,15 @@ class _MapState extends State<Map> {
           children: [
             if (_photos.isNotEmpty) _buildMarkerIconsContainer(),
             GoogleMap(
+              myLocationButtonEnabled: true,
+              myLocationEnabled: true,
+              mapToolbarEnabled: false,
               initialCameraPosition:
                   CameraPosition(target: _initialPosition, zoom: 15),
               markers: _markers,
               onCameraMove: _onCameraMove,
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.76),
             ),
             AddLocationIcon()
           ],
