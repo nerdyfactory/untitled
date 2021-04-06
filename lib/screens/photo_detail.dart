@@ -38,13 +38,14 @@ class PhotoDetail extends StatelessWidget {
                 width: 393,
                 child: GoogleMap(
                   mapType: MapType.hybrid,
+                  scrollGesturesEnabled: false,
+                  rotateGesturesEnabled: false,
                   markers: {
                     Marker(
                         markerId: MarkerId(photoDetails[0]),
                         position: LatLng(photoDetails[1], photoDetails[2]))
                   },
                   initialCameraPosition: CameraPosition(
-                      bearing: 192.8334901395799,
                       target: LatLng(photoDetails[1], photoDetails[2]),
                       zoom: 15),
                 ))

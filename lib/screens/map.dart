@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/utils/PhotoQuery.dart';
 import 'package:untitled/widgets.dart';
@@ -20,11 +21,39 @@ class _MapState extends State<Map> {
   List<GlobalKey> _markerIconKeys = [];
   Set<String> renderedMarkers = Set();
   LatLng cameraPositionForFetchingRecords =
-      LatLng(33.6043888, 73.11627440000002);
+      LatLng(22.6043888, 60.11627440000002);
   @override
   void initState() {
     _getPhotos();
+    _setInitialLocation();
     super.initState();
+  }
+
+  Future<void> _setInitialLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openAppSettings();
+      await Geolocator.openLocationSettings();
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    var position = await Geolocator.getCurrentPosition();
+    cameraPositionForFetchingRecords =
+        LatLng(position.latitude, position.longitude);
   }
 
   Future<void> _getPhotos() async {
