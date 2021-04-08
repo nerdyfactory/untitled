@@ -22,7 +22,6 @@ class _FeedState extends State<Feed> {
   initState() {
     super.initState();
     _getLocation();
-    _getFirestoreStream();
   }
 
   _getFirestoreStream() {
