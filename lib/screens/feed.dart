@@ -1,16 +1,54 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/routes.dart';
 import 'package:untitled/widgets.dart';
 
-class Feed extends StatelessWidget {
+class Feed extends StatefulWidget {
+  @override
+  _FeedState createState() => _FeedState();
+}
+
+class _FeedState extends State<Feed> {
+  late GeoFlutterFire geo = GeoFlutterFire();
+  late Stream<List<DocumentSnapshot>> stream;
+  LatLng userLocation = LatLng(33.604392, 73.1162735);
+
+  @override
+  initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  _getFirestoreStream() {
+    GeoFirePoint center = geo.point(
+        latitude: userLocation.latitude, longitude: userLocation.longitude);
+    var collectionReference =
+        FirebaseFirestore.instance.collection('positions');
+    stream = geo.collection(collectionRef: collectionReference).within(
+        center: center, radius: 500, field: 'location', strictMode: true);
+    return stream.asBroadcastStream();
+  }
+
+  _getLocation() async {
+    Position position = await Geolocator.getCurrentPosition();
+    userLocation = LatLng(position.latitude, position.longitude);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('photos').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        stream: _getFirestoreStream(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+          print(snapshot);
           if (!snapshot.hasData)
             return new Stack(
               children: [
@@ -26,7 +64,7 @@ class Feed extends StatelessWidget {
                 AddLocationIcon()
               ],
             );
-          if (snapshot.data!.size == 0)
+          if (snapshot.data!.length == 0)
             return new Stack(
               children: [
                 Center(
@@ -43,14 +81,18 @@ class Feed extends StatelessWidget {
             );
           return new Stack(children: [
             ListView(
-              children: snapshot.data!.docs.map((document) {
+              children: snapshot.data!.map((document) {
                 return new GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, Routes.photo_detail,
                           arguments: {
                             'path': document.data()!["downloadUrl"],
-                            'longitude': document.data()!['location'].longitude,
-                            'latitude': document.data()!['location'].latitude
+                            'longitude': document
+                                .data()!['location']['geopoint']
+                                .longitude,
+                            'latitude': document
+                                .data()!['location']['geopoint']
+                                .latitude
                           });
                     },
                     child: PhotoContainer(

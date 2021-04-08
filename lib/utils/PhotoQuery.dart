@@ -30,9 +30,9 @@ class PhotoQuery {
             isLessThan: GeoPoint(northEast.latitude, northEast.longitude))
         .get();
     snapshot.docs.forEach((document) {
-      GeoPoint geoPoint = document.data()!["location"];
+      GeoPoint geoPoint = document.data()["location"];
       photos.add(PhotoData(LatLng(geoPoint.latitude, geoPoint.longitude),
-          document.data()!["uid"], document.data()!["downloadUrl"]));
+          document.data()["uid"], document.data()["downloadUrl"]));
     });
     return photos;
   }
