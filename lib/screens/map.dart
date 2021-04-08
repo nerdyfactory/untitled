@@ -22,6 +22,7 @@ class _MapState extends State<Map> {
   Set<String> renderedMarkers = Set();
   LatLng cameraPositionForFetchingRecords =
       LatLng(22.6043888, 60.11627440000002);
+  late GoogleMapController _controller;
   @override
   void initState() {
     _getPhotos();
@@ -70,6 +71,19 @@ class _MapState extends State<Map> {
     setState(() {});
   }
 
+  void _getUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition();
+    _controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(position.latitude, position.longitude), zoom: 15)));
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  _onMapCreated(GoogleMapController controller) {
+    _controller = controller;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -78,17 +92,42 @@ class _MapState extends State<Map> {
           children: [
             if (_photos.isNotEmpty) _buildMarkerIconsContainer(),
             GoogleMap(
-              myLocationButtonEnabled: true,
+              onMapCreated: _onMapCreated,
               myLocationEnabled: true,
+              myLocationButtonEnabled: false,
               mapToolbarEnabled: false,
               initialCameraPosition:
                   CameraPosition(target: _initialPosition, zoom: 15),
               markers: _markers,
               onCameraMove: _onCameraMove,
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.76),
             ),
-            AddLocationIcon()
+            AddLocationIcon(),
+            Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.15,
+                right: MediaQuery.of(context).size.width * 0.03,
+                child: GestureDetector(
+                  onTap: _getUserLocation,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: Colors.white70,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.all(9),
+                    child: Icon(
+                      Icons.my_location_sharp,
+                      color: Colors.blue[500],
+                      size: 22.0,
+                    ),
+                  ),
+                ))
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
