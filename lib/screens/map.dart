@@ -82,6 +82,7 @@ class _MapState extends State<Map> {
 
   _onMapCreated(GoogleMapController controller) {
     _controller = controller;
+    _getUserLocation();
   }
 
   @override
