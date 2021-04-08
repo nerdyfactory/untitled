@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:untitled/utils/PhotoQuery.dart';
 import 'package:untitled/widgets.dart';
@@ -20,11 +21,40 @@ class _MapState extends State<Map> {
   List<GlobalKey> _markerIconKeys = [];
   Set<String> renderedMarkers = Set();
   LatLng cameraPositionForFetchingRecords =
-      LatLng(33.6043888, 73.11627440000002);
+      LatLng(22.6043888, 60.11627440000002);
+  late GoogleMapController _controller;
   @override
   void initState() {
     _getPhotos();
+    _setInitialLocation();
     super.initState();
+  }
+
+  Future<void> _setInitialLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openAppSettings();
+      await Geolocator.openLocationSettings();
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    var position = await Geolocator.getCurrentPosition();
+    cameraPositionForFetchingRecords =
+        LatLng(position.latitude, position.longitude);
   }
 
   Future<void> _getPhotos() async {
@@ -41,6 +71,20 @@ class _MapState extends State<Map> {
     setState(() {});
   }
 
+  void _getUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition();
+    _controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(position.latitude, position.longitude), zoom: 15)));
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  _onMapCreated(GoogleMapController controller) {
+    _controller = controller;
+    _getUserLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -49,17 +93,42 @@ class _MapState extends State<Map> {
           children: [
             if (_photos.isNotEmpty) _buildMarkerIconsContainer(),
             GoogleMap(
-              myLocationButtonEnabled: true,
+              onMapCreated: _onMapCreated,
               myLocationEnabled: true,
+              myLocationButtonEnabled: false,
               mapToolbarEnabled: false,
               initialCameraPosition:
                   CameraPosition(target: _initialPosition, zoom: 15),
               markers: _markers,
               onCameraMove: _onCameraMove,
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.76),
             ),
-            AddLocationIcon()
+            AddLocationIcon(),
+            Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.15,
+                right: MediaQuery.of(context).size.width * 0.03,
+                child: GestureDetector(
+                  onTap: _getUserLocation,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: Colors.white70,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.all(9),
+                    child: Icon(
+                      Icons.my_location_sharp,
+                      color: Colors.blue[500],
+                      size: 22.0,
+                    ),
+                  ),
+                ))
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
